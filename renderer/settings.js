@@ -2,6 +2,8 @@ const els = {
   clockColor: document.getElementById("clockColor"),
   clockScale: document.getElementById("clockScale"),
   scaleValue: document.getElementById("scaleValue"),
+  clockOpacity: document.getElementById("clockOpacity"),
+  opacityValue: document.getElementById("opacityValue"),
   showDate: document.getElementById("showDate"),
   clickThrough: document.getElementById("clickThrough"),
   lockPosition: document.getElementById("lockPosition"),
@@ -20,6 +22,8 @@ function render(settings) {
   els.clockColor.value = settings.clockColor;
   els.clockScale.value = settings.clockScale;
   els.scaleValue.textContent = `${Number(settings.clockScale).toFixed(2)}x`;
+  els.clockOpacity.value = settings.clockOpacity;
+  els.opacityValue.textContent = `${Math.round(Number(settings.clockOpacity) * 100)}%`;
   els.showDate.checked = settings.showDate;
   els.clickThrough.checked = settings.clickThrough;
   els.lockPosition.checked = settings.lockPosition;
@@ -39,6 +43,10 @@ els.clockColor.addEventListener("input", () => {
 
 els.clockScale.addEventListener("input", () => {
   pushPatch({ clockScale: Number(els.clockScale.value) });
+});
+
+els.clockOpacity.addEventListener("input", () => {
+  pushPatch({ clockOpacity: Number(els.clockOpacity.value) });
 });
 
 els.showDate.addEventListener("change", () => {

@@ -11,6 +11,7 @@ const defaultSettings = {
   fontFamily: "Segoe UI",
   fontPath: "",
   clockScale: 1,
+  clockOpacity: 1,
   showDate: true,
   clickThrough: false,
   lockPosition: false,
@@ -94,6 +95,10 @@ function createClockWindow() {
 
 function createSettingsWindow() {
   if (settingsWindow && !settingsWindow.isDestroyed()) {
+    if (settingsWindow.isMinimized()) {
+      settingsWindow.restore();
+    }
+    settingsWindow.show();
     settingsWindow.focus();
     return;
   }
@@ -104,6 +109,7 @@ function createSettingsWindow() {
     title: "WinClock Ayarlar",
     resizable: false,
     alwaysOnTop: true,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -113,6 +119,10 @@ function createSettingsWindow() {
 
   settingsWindow.setMenuBarVisibility(false);
   settingsWindow.loadFile(path.join(__dirname, "renderer", "settings.html"));
+  settingsWindow.once("ready-to-show", () => {
+    settingsWindow.show();
+    settingsWindow.focus();
+  });
 
   settingsWindow.on("closed", () => {
     settingsWindow = null;
@@ -245,7 +255,11 @@ function saveAndBroadcast() {
 ipcMain.handle("get-settings", () => appSettings);
 
 ipcMain.handle("update-settings", (_event, patch) => {
-  appSettings = { ...appSettings, ...patch };
+  const nextPatch = { ...patch };
+  if (Object.prototype.hasOwnProperty.call(nextPatch, "clockOpacity")) {
+    nextPatch.clockOpacity = Math.max(0, Math.min(1, Number(nextPatch.clockOpacity) || 0));
+  }
+  appSettings = { ...appSettings, ...nextPatch };
   saveAndBroadcast();
   return appSettings;
 });
@@ -280,6 +294,10 @@ ipcMain.handle("reset-position", () => {
 
 app.whenReady().then(() => {
   appSettings = loadSettings();
+  if (typeof appSettings.clockOpacity !== "number") {
+    appSettings.clockOpacity = 1;
+  }
+  appSettings.clockOpacity = Math.max(0, Math.min(1, Number(appSettings.clockOpacity) || 1));
   // Migrate legacy setting key.
   if (typeof appSettings.alwaysOnBottom !== "boolean") {
     appSettings.alwaysOnBottom = true;
