@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WinClock Ayarlar</title>
+    <link rel="stylesheet" href="./settings.css" />
+  </head>
+  <body>
+    <main class="panel">
+      <h1>WinClock Ayarlar</h1>
+
+      <label class="field">
+        <span>Saat/Tarih Rengi</span>
+        <input id="clockColor" type="color" />
+      </label>
+
+      <label class="field">
+        <span>Boyut (Ölçek)</span>
+        <input id="clockScale" type="range" min="0.5" max="4" step="0.05" />
+        <output id="scaleValue">1.00x</output>
+      </label>
+
+      <label class="field checkbox">
+        <input id="showDate" type="checkbox" />
+        <span>Tarihi Göster</span>
+      </label>
+
+      <label class="field checkbox">
+        <input id="clickThrough" type="checkbox" />
+        <span>Masaüstünde Tıklanamaz (Click-through)</span>
+      </label>
+
+      <label class="field checkbox">
+        <input id="lockPosition" type="checkbox" />
+        <span>Konumu Kilitle</span>
+      </label>
+
+      <label class="field checkbox">
+        <input id="alwaysOnBottom" type="checkbox" />
+        <span>Diğer Pencerelerin Altında Tut</span>
+      </label>
+
+      <label class="field checkbox">
+        <input id="openAtLogin" type="checkbox" />
+        <span>Windows ile Başlat</span>
+      </label>
+
+      <section class="field">
+        <span>Yazı Stili</span>
+        <div class="row">
+          <button id="selectFont" type="button">Dışarıdan Font Yükle</button>
+          <button id="clearFont" type="button">Varsayılan Font</button>
+        </div>
+        <p id="fontPath" class="hint">Varsayılan font kullanılıyor.</p>
+      </section>
+
+      <div class="row">
+        <button id="resetPosition" type="button">Konumu Sıfırla</button>
+      </div>
+    </main>
+    <script src="./settings.js"></script>
+  </body>
+</html>
