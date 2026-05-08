@@ -12,6 +12,7 @@ const defaultSettings = {
   fontPath: "",
   clockScale: 1,
   clockOpacity: 1,
+  showSeconds: true,
   showDate: true,
   clickThrough: false,
   lockPosition: false,
@@ -130,14 +131,30 @@ function createSettingsWindow() {
 }
 
 function createTray() {
+  const trayIconPath = path.join(__dirname, "assets", "tray.png");
   const svg = encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-      <circle cx="8" cy="8" r="7" fill="#e2e8f0"/>
-      <line x1="8" y1="8" x2="8" y2="4" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="8" y1="8" x2="11" y2="9.5" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="8" cy="8" r="7" fill="#facc15"/>
     </svg>
   `);
-  const trayIcon = nativeImage.createFromDataURL(`data:image/svg+xml,${svg}`);
+  let trayIcon = fs.existsSync(trayIconPath)
+    ? nativeImage.createFromPath(trayIconPath)
+    : nativeImage.createFromDataURL(`data:image/svg+xml,${svg}`);
+
+  if (trayIcon.isEmpty()) {
+    trayIcon = nativeImage.createFromDataURL(`data:image/svg+xml,${svg}`);
+  }
+
+  if (trayIcon.isEmpty() && process.platform === "linux") {
+    try {
+      const pngBuffer = nativeImage.createFromDataURL(`data:image/svg+xml,${svg}`).toPNG();
+      trayIcon = nativeImage.createFromBuffer(pngBuffer);
+    } catch (e) {
+      // fallback to original trayIcon
+    }
+  }
+  // Ensure a small, explicit size for desktop environments that require bitmap icons
+  trayIcon = trayIcon.resize({ width: 16, height: 16 });
   tray = new Tray(trayIcon);
   tray.setToolTip("WinClock");
   refreshTrayMenu();
@@ -298,6 +315,9 @@ app.whenReady().then(() => {
     appSettings.clockOpacity = 1;
   }
   appSettings.clockOpacity = Math.max(0, Math.min(1, Number(appSettings.clockOpacity) || 1));
+  if (typeof appSettings.showSeconds !== "boolean") {
+    appSettings.showSeconds = true;
+  }
   // Migrate legacy setting key.
   if (typeof appSettings.alwaysOnBottom !== "boolean") {
     appSettings.alwaysOnBottom = true;
@@ -313,7 +333,8 @@ app.whenReady().then(() => {
   createClockWindow();
   createTray();
 
-  if (process.argv.includes("--hidden")) {
+  if (process.argv.includes("--hidden") && appSettings.openAtLogin) {
+    // Only auto-hide when started by login (openAtLogin); otherwise show the clock.
     clockWindow.hide();
   }
 

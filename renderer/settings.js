@@ -5,6 +5,7 @@ const els = {
   clockOpacity: document.getElementById("clockOpacity"),
   opacityValue: document.getElementById("opacityValue"),
   showDate: document.getElementById("showDate"),
+  showSeconds: document.getElementById("showSeconds"),
   clickThrough: document.getElementById("clickThrough"),
   lockPosition: document.getElementById("lockPosition"),
   alwaysOnBottom: document.getElementById("alwaysOnBottom"),
@@ -25,6 +26,7 @@ function render(settings) {
   els.clockOpacity.value = settings.clockOpacity;
   els.opacityValue.textContent = `${Math.round(Number(settings.clockOpacity) * 100)}%`;
   els.showDate.checked = settings.showDate;
+  els.showSeconds.checked = settings.showSeconds !== false;
   els.clickThrough.checked = settings.clickThrough;
   els.lockPosition.checked = settings.lockPosition;
   els.alwaysOnBottom.checked = settings.alwaysOnBottom;
@@ -51,6 +53,10 @@ els.clockOpacity.addEventListener("input", () => {
 
 els.showDate.addEventListener("change", () => {
   pushPatch({ showDate: els.showDate.checked });
+});
+
+els.showSeconds.addEventListener("change", () => {
+  pushPatch({ showSeconds: els.showSeconds.checked });
 });
 
 els.clickThrough.addEventListener("change", () => {

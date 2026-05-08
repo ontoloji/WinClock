@@ -54,7 +54,12 @@ function applySettings(settings) {
 
 function tick() {
   const now = new Date();
-  timeEl.textContent = now.toLocaleTimeString("tr-TR", { hour12: false });
+  timeEl.textContent = now.toLocaleTimeString("tr-TR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: currentSettings?.showSeconds === false ? undefined : "2-digit",
+    hour12: false
+  });
   dateEl.textContent = dateFormatter.format(now);
 }
 
